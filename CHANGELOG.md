@@ -41,3 +41,6 @@ We now can play a game vs computer, but there is two problems at this stage :
 
 We now have a provably fair game, but there is still a bit of work to do on UI so the user can understands what happens.
 
+## Add some style to webapp
+
+Added tailwind lib to webapp

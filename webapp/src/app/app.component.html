@@ -1,36 +1,45 @@
-<h1>Rocks paper scissors</h1>
+<div class="flex align-middle mx-auto h-screen">
+  <div class="flex flex-col mx-auto">
+    <h1 class="text-center uppercase my-32 underline underline-offset-8">Rocks paper scissors</h1>
 
-<ng-container *ngIf="game">
-  <pre>{{ game | json }}</pre>
+    <div *ngIf="game">
+      <!-- <pre>{{ game | json }}</pre> -->
 
-  <!-- Game fairness -->
-  <game-fairness [game]="game"></game-fairness>
+      <!-- Game fairness -->
+      <div class="my-16">
+        <game-fairness [game]="game"></game-fairness>
+      </div>
 
-  <!-- Buttons for user guess -->
-  <ng-container *ngIf="game.state === 'prepare'">
-    <button (click)="play('rock')">Rock</button>
-    <button (click)="play('paper')">Paper</button>
-    <button (click)="play('scissors')">Scissors</button>
-  </ng-container>
+      <!-- Buttons for user guess -->
+      <div class="flex flex-col" *ngIf="game.state === 'prepare'">
+        <button class="btn btn-gray btn-xl mt-4" (click)="play('rock')">{{ 'rock' | guessName }}</button>
+        <button class="btn btn-gray btn-xl mt-4" (click)="play('paper')">{{ 'paper' | guessName }}</button>
+        <button class="btn btn-gray btn-xl mt-4" (click)="play('scissors')">{{ 'scissors' | guessName }}</button>
+      </div>
 
-  <!-- Game result -->
-  <ng-container *ngIf="game.state === 'settle'">
-    <!-- User guess -->
-    <p>You chose {{ game.userGuess }}</p>
+      <!-- Game result -->
+      <ng-container *ngIf="game.state === 'settle'">
+        <!-- User guess -->
+        <p class="text-2xl">You chose {{ game.userGuess | guessName }}</p>
 
-    <!-- Computer guess -->
-    <p>Computer chose {{ game.computerGuess }}</p>
+        <!-- Computer guess -->
+        <p class="text-2xl">Computer chose {{ game.computerGuess | guessName }}</p>
 
-    <!-- Result -->
-    <strong>
-      <ng-container [ngSwitch]="game.result">
-        <ng-template ngSwitchCase="win"> You win! </ng-template>
-        <ng-template ngSwitchCase="lose"> You lose! </ng-template>
-        <ng-template ngSwitchCase="draw"> Draw! </ng-template>
+        <!-- Result -->
+        <div class="text-3xl text-center mt-6">
+          <strong>
+            <ng-container [ngSwitch]="game.result">
+              <ng-template ngSwitchCase="win"> You win! </ng-template>
+              <ng-template ngSwitchCase="lose"> You lose! </ng-template>
+              <ng-template ngSwitchCase="draw"> Draw! </ng-template>
+            </ng-container>
+          </strong>
+        </div>
       </ng-container>
-    </strong>
+    </div>
 
-  </ng-container>
-</ng-container>
-
-<button *ngIf="!game || game.state === 'settle'" (click)="prepareGame()">Play again</button>
+    <button class="btn btn-gray btn-xl mt-4" *ngIf="!game || game.state === 'settle'" (click)="prepareGame()">
+      Play again
+    </button>
+  </div>
+</div>
