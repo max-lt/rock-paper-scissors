@@ -1,12 +1,13 @@
 import { Guess, IGameState, IGameStatePrepare, IGameStateSettle, Player } from '~/interfaces';
 
-import { games, players } from './storage.service';
+import { setItem, getItem, InternalGameState } from './storage.utils';
+import { playerService } from './player.service';
 
 export const gameService = {
   /**
    * Creates a new game and returns the game state with the computer guess hashed
    */
-  async prepareGame(playerId: string): Promise<IGameStatePrepare> {
+  async prepareGame(kv: KVNamespace, playerId: string): Promise<IGameStatePrepare> {
     const guess = ['rock', 'paper', 'scissors'][Math.floor(Math.random() * 3)] as Guess;
 
     const id = crypto.randomUUID();
@@ -21,15 +22,15 @@ export const gameService = {
     const game: IGameState = { id, state: 'prepare', hash, player: playerId };
 
     // Store game with nonce
-    games.set(id, { ...game, nonce, computerGuess: guess });
+    await setItem(kv, id, { ...game, nonce, computerGuess: guess });
 
     return game;
   },
   /**
    * Computer unveils its guess and the result of the game
    */
-  async settleGame(id: string, playerGuess: Guess): Promise<IGameStateSettle | null> {  
-    const game = games.get(id);
+  async settleGame(kv: KVNamespace, id: string, playerGuess: Guess): Promise<IGameStateSettle | null> {
+    const game = await getItem<InternalGameState>(kv, id);
     if (!game) {
       return null;
     }
@@ -37,42 +38,45 @@ export const gameService = {
     if (game.state !== 'prepare') {
       return null;
     }
-  
+
     const { computerGuess } = game;
-  
+
     const result = (() => {
       if (playerGuess === computerGuess) {
         return 'draw';
       }
-  
+
       if (playerGuess === 'rock' && computerGuess === 'scissors') {
         return 'win';
       }
-  
+
       if (playerGuess === 'paper' && computerGuess === 'rock') {
         return 'win';
       }
-  
+
       if (playerGuess === 'scissors' && computerGuess === 'paper') {
         return 'win';
       }
-  
+
       return 'lose';
     })();
-  
+
     // Assign result to game
     const settled: IGameState = { ...game, state: 'settle', userGuess: playerGuess, result };
-  
+
     // Update game
-    games.set(id, settled);
+    await setItem(kv, id, settled);
 
     // Update player
-    const player = players.get(game.player);
-    if (player) {
-      players.set(game.player, { ...player, games: player.games + 1, wins: player.wins + (result === 'win' ? 1 : 0) });
-    } else {
-      players.set(game.player, { id: game.player, name: game.player, games: 1, wins: result === 'win' ? 1 : 0 });
+    const player = await playerService.getPlayer(kv, game.player);
+    if (!player) {
+      throw new Error('Player not found');
     }
+    await playerService.updatePlayer(kv, {
+      ...player,
+      games: player.games + 1,
+      wins: player.wins + (result === 'win' ? 1 : 0)
+    });
 
     return settled;
   }

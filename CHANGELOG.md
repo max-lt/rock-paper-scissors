@@ -46,3 +46,5 @@ We now have a provably fair game, but there is still a bit of work to do on UI s
 Added tailwind lib to webapp
 
 ## Add leaderboard
+
+## Add persistance with KV.

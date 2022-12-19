@@ -45,41 +45,35 @@ export class JSONResponse<T> extends Response {
   }
 }
 
-export interface Env {
-  // Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
-  // MY_KV_NAMESPACE: KVNamespace;
-  //
-  // Example binding to Durable Object. Learn more at https://developers.cloudflare.com/workers/runtime-apis/durable-objects/
-  // MY_DURABLE_OBJECT: DurableObjectNamespace;
-  //
-  // Example binding to R2. Learn more at https://developers.cloudflare.com/workers/runtime-apis/r2/
-  // MY_BUCKET: R2Bucket;
-}
+export interface Env { rock_paper_scissors: KVNamespace; }
 
-api.post('/player/register', async (request: Request) => {
+api.post('/player/register', async (request: Request, env: Env) => {
+  const kv = env.rock_paper_scissors;
   const { name } = await request.json<{ name: string }>();
-  const player = await playerService.registerPlayer(name);
+  const player = await playerService.registerPlayer(kv, name);
   return new JSONResponse({ player }, { headers });
 });
 
-api.post('/game/prepare', async (request: Request) => {
+api.post('/game/prepare', async (request: Request, env: Env) => {
+  const kv = env.rock_paper_scissors;
   const { playerId } = await request.json<{ playerId: string }>();
 
-  const game = await gameService.prepareGame(playerId);
-  const board = await boardService.getLeaderBoard();
+  const game = await gameService.prepareGame(kv, playerId);
+  const board = await boardService.getLeaderBoard(kv);
   
   return new JSONResponse({ game, board }, { headers });
 });
 
-api.post('/game/settle', async (request: Request) => {
+api.post('/game/settle', async (request: Request, env: Env) => {
+  const kv = env.rock_paper_scissors;
   const { id, userGuess } = await request.json<{ id: string, userGuess: Guess }>();
 
-  const game = await gameService.settleGame(id, userGuess);
+  const game = await gameService.settleGame(kv, id, userGuess);
   if (!game) {
     return new NotFound();
   }
 
-  const board = await boardService.getLeaderBoard();
+  const board = await boardService.getLeaderBoard(kv);
 
   return new JSONResponse({ game, board }, { headers });
 });
