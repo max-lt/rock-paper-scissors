@@ -25,3 +25,9 @@ cd worker
 wrangler init --yes
 ```
 
+## Set Angular proxy conf
+
+We add `webapp/proxy.conf.json` to link `/api/*` calls to our worker.
+
+Worker now has an `api` router that provides `/api/random` endpoint that returns a random number (to test that our proxy works).
+
