@@ -1,6 +1,19 @@
 <div class="flex align-middle mx-auto h-screen">
   <div class="flex flex-col mx-auto">
-    <h1 class="text-center uppercase my-32 underline underline-offset-8">Rocks paper scissors</h1>
+    <h1 class="text-center uppercase mt-8 bg-orange-100 p-4 rounded-lg">Rocks paper scissors</h1>
+
+    <div class="py-8 text-xl">
+      <p>Proof of concept of a provably fair rock paper scissors game:</p>
+      <p class="note">
+        the computer provides his guess first, but the user discovers <br />
+        the computer guess only after his own guess has been submitted
+      </p>
+      <p class="note">
+        to check if the computer cheated: perform a sha1 hash of the <br />
+        computer guess + nonce and compare it to the computer result hash <br />
+        that have been provided before the user guess
+      </p>
+    </div>
 
     <!-- Register player -->
     <div *ngIf="!player">
@@ -14,7 +27,7 @@
     <!-- Game is ready -->
     <div *ngIf="game">
       <!-- Game fairness -->
-      <div class="my-16">
+      <div class="mb-12 mt-6">
         <game-fairness [game]="game"></game-fairness>
       </div>
 
@@ -48,25 +61,25 @@
       <div class="text-center" *ngIf="!game || game.state === 'settle'">
         <button class="btn btn-gray btn-xl mt-4" (click)="prepareGame()">Play again</button>
       </div>
+    </div>
 
-      <!-- Leaderboard -->
-      <div class="mt-16">
-        <table class="table-auto">
-          <thead>
-            <tr>
-              <th class="text-left p-4">Player</th>
-              <th class="text-right p-4">Wins / Games</th>
-            </tr>
-          </thead>
+    <!-- Leaderboard -->
+    <div class="mt-16">
+      <table class="table-auto">
+        <thead>
+          <tr>
+            <th class="text-left p-4">Player</th>
+            <th class="text-right p-4">Wins / Games</th>
+          </tr>
+        </thead>
 
-          <tbody>
-            <tr *ngFor="let player of board">
-              <td>{{ player.name }}</td>
-              <td class="text-right">{{ player.wins }} / {{ player.games }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+        <tbody>
+          <tr *ngFor="let player of board">
+            <td>{{ player.name }}</td>
+            <td class="text-right">{{ player.wins }} / {{ player.games }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>

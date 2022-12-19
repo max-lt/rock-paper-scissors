@@ -19,7 +19,14 @@ export class AppComponent {
     this.player = playerService.getPlayer();
     if (this.player) {
       this.prepareGame();
+    } else {
+      this.getBoard();
     }
+  }
+
+  async getBoard() {
+    const { board } = await this.gameService.getBoard();
+    this.board = board;
   }
 
   async registerPlayer() {

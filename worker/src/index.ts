@@ -47,6 +47,7 @@ export class JSONResponse<T> extends Response {
 
 export interface Env { rock_paper_scissors: KVNamespace; }
 
+// Register player
 api.post('/player/register', async (request: Request, env: Env) => {
   const kv = env.rock_paper_scissors;
   const { name } = await request.json<{ name: string }>();
@@ -54,6 +55,14 @@ api.post('/player/register', async (request: Request, env: Env) => {
   return new JSONResponse({ player }, { headers });
 });
 
+// Get board only
+api.get('/game/board', async (request: Request, env: Env) => {
+  const kv = env.rock_paper_scissors;
+  const board = await boardService.getLeaderBoard(kv);
+  return new JSONResponse({ board }, { headers });
+});
+
+// Get new game and board
 api.post('/game/prepare', async (request: Request, env: Env) => {
   const kv = env.rock_paper_scissors;
   const { playerId } = await request.json<{ playerId: string }>();
@@ -64,6 +73,7 @@ api.post('/game/prepare', async (request: Request, env: Env) => {
   return new JSONResponse({ game, board }, { headers });
 });
 
+// Settle game and refreshed board
 api.post('/game/settle', async (request: Request, env: Env) => {
   const kv = env.rock_paper_scissors;
   const { id, userGuess } = await request.json<{ id: string, userGuess: Guess }>();

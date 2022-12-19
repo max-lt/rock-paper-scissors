@@ -1,6 +1,16 @@
 <div *ngIf="game">
   Computer result hash: <code>{{ game.hash }}</code>
   <div *ngIf="game.state === 'settle'">
-    {{ game.hash }} = {{ game.computerGuess }} + {{ game.nonce }} ? {{ verified }}
+    Is computer result hash equals to <code>{{ game.computerGuess }} + {{ game.nonce }}</code> ?
+
+    <div class="mt-12">
+      <code class="text-3xl text-center" [ngClass]="verified === 'verified' ? 'bg-lime-100' : 'bg-white'">
+        <ng-container [ngSwitch]="verified">
+          <ng-template ngSwitchCase="verifying"> Verifying computer result hash... </ng-template>
+          <ng-template ngSwitchCase="verified"> Computer result hash is valid ❎ </ng-template>
+          <ng-template ngSwitchCase="failed"> Computer result hash is invalid ❌ </ng-template>
+        </ng-container>
+      </code>
+    </div>
   </div>
 </div>

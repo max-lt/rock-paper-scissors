@@ -32,7 +32,7 @@
 }
 
 .btn-xl {
-  @apply text-2xl py-3 px-6 rounded-xl;
+  @apply text-2xl py-3 px-6 rounded-lg;
 }
 
 table {
@@ -58,5 +58,19 @@ input {
 
   &:focus {
     @apply outline-none;
+  }
+}
+
+code {
+  @apply bg-pink-100 text-gray-700 px-2 pt-2 pb-1 rounded;
+}
+
+p {
+  @apply text-xl mt-2;
+
+  &.note  {
+    @apply ml-4;
+    display: list-item;
+    list-style-type: '> ';
   }
 }

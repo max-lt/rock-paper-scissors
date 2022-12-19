@@ -28,4 +28,8 @@ export class GameService {
   public settleGame(id: string, userGuess: string) {
     return firstValueFrom(this.http.post<IResponse<IGameStateSettle>>('/api/game/settle', { id, userGuess }));
   }
+
+  public getBoard() {
+    return firstValueFrom(this.http.get<IResponse<never>>('/api/game/board'));
+  }
 }
