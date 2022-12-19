@@ -4,6 +4,7 @@ export type Result = 'win' | 'lose' | 'draw';
 
 interface ICommonGameProperties {
   id: string;
+  player: string;
   state: State;
   hash: string; // Computer hashed guess, sha256(nonce + guess)
 }
@@ -31,3 +32,12 @@ export interface IGameStateSettle extends ICommonGameProperties {
 }
 
 export type IGameState = IGameStatePrepare | IGameStateSettle;
+
+export interface Player {
+  id: string;
+  name: string;
+  wins: number;
+  games: number;
+} 
+
+export type LeaderBoard = Player[];

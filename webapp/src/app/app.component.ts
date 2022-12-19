@@ -1,16 +1,29 @@
 import { Component } from '@angular/core';
 
-import { Guess, IGameState } from '~/interfaces';
+import { Guess, IGameState, LeaderBoard, Player } from '~/interfaces';
 import { GameService } from './game.service';
+import { PlayerService } from './player.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html'
 })
 export class AppComponent {
-  public game: IGameState | null = null;
+  public player: Player | null;
+  public playerName = '';
 
-  constructor(private gameService: GameService) {
+  public game: IGameState | null = null;
+  public board?: LeaderBoard;
+
+  constructor(private gameService: GameService, private playerService: PlayerService) {
+    this.player = playerService.getPlayer();
+    if (this.player) {
+      this.prepareGame();
+    }
+  }
+
+  async registerPlayer() {
+    this.player = await this.playerService.registerPlayer(this.playerName);
     this.prepareGame();
   }
 
@@ -18,7 +31,9 @@ export class AppComponent {
    * Prepare a game - this is called when the page loads and when the user clicks on the "Play Again" button
    */
   async prepareGame() {
-    this.game = await this.gameService.prepareGame();
+    const { game, board } = await this.gameService.prepareGame();
+    this.game = game;
+    this.board = board;
   }
 
   /**
@@ -34,10 +49,8 @@ export class AppComponent {
 
     const id = this.game.id;
 
-    this.game = await this.gameService.settleGame(id, userGuess);
-  }
-
-  async verifyGame() {
-    
+    const { game, board } = await this.gameService.settleGame(id, userGuess);
+    this.game = game;
+    this.board = board;
   }
 }

@@ -44,3 +44,5 @@ We now have a provably fair game, but there is still a bit of work to do on UI s
 ## Add some style to webapp
 
 Added tailwind lib to webapp
+
+## Add leaderboard

@@ -10,7 +10,10 @@
 
 import { Router } from 'itty-router';
 
-import { Guess, IGameState, IGameStateSettle } from '~/interfaces';
+import { Guess } from '~/interfaces';
+import { boardService } from './board.service';
+import { gameService } from './game.service';
+import { playerService } from './player.service';
 
 const router = Router(); // Main router
 const api = Router({ base: '/api' }); // API router
@@ -53,66 +56,32 @@ export interface Env {
   // MY_BUCKET: R2Bucket;
 }
 
-// Todo: persist games in KV
-const games = new Map<string, IGameState & { nonce: string; computerGuess: Guess }>();
+api.post('/player/register', async (request: Request) => {
+  const { name } = await request.json<{ name: string }>();
+  const player = await playerService.registerPlayer(name);
+  return new JSONResponse({ player }, { headers });
+});
 
-api.get('/game/prepare', async () => {
-  const guess = ['rock', 'paper', 'scissors'][Math.floor(Math.random() * 3)] as Guess;
+api.post('/game/prepare', async (request: Request) => {
+  const { playerId } = await request.json<{ playerId: string }>();
 
-  const id = crypto.randomUUID();
-  const nonce = crypto.randomUUID().slice(0, 8);
-
-  // Perform hash of nonce + guess
-  const digest = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(nonce + guess));
-
-  // Turn digest into a hex string
-  const hash = [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
-
-  const game: IGameState = { id, state: 'prepare', hash };
-
-  // Store game with nonce
-  games.set(id, { ...game, nonce, computerGuess: guess });
-
-  return new JSONResponse(game, { headers });
+  const game = await gameService.prepareGame(playerId);
+  const board = await boardService.getLeaderBoard();
+  
+  return new JSONResponse({ game, board }, { headers });
 });
 
 api.post('/game/settle', async (request: Request) => {
-  const { id, userGuess } = await request.json<Pick<IGameStateSettle, 'id' | 'userGuess'>>();
+  const { id, userGuess } = await request.json<{ id: string, userGuess: Guess }>();
 
-  const game = games.get(id);
+  const game = await gameService.settleGame(id, userGuess);
   if (!game) {
     return new NotFound();
   }
 
-  const { computerGuess } = game;
+  const board = await boardService.getLeaderBoard();
 
-  const result = (() => {
-    if (userGuess === computerGuess) {
-      return 'draw';
-    }
-
-    if (userGuess === 'rock' && computerGuess === 'scissors') {
-      return 'win';
-    }
-
-    if (userGuess === 'paper' && computerGuess === 'rock') {
-      return 'win';
-    }
-
-    if (userGuess === 'scissors' && computerGuess === 'paper') {
-      return 'win';
-    }
-
-    return 'lose';
-  })();
-
-  // Assign result to game
-  const settled: IGameState = { ...game, state: 'settle', userGuess, result };
-
-  // Update game
-  games.set(id, settled);
-
-  return new JSONResponse(settled, { headers });
+  return new JSONResponse({ game, board }, { headers });
 });
 
 // Bind API routes to main router, defaults to 404
