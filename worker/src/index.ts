@@ -10,6 +10,8 @@
 
 import { Router } from 'itty-router';
 
+import { Guess, IGameState, IGameStateSettle } from '~/interfaces';
+
 const router = Router(); // Main router
 const api = Router({ base: '/api' }); // API router
 
@@ -17,7 +19,7 @@ const api = Router({ base: '/api' }); // API router
 const headers = new Headers();
 headers.append('Access-Control-Allow-Origin', 'http://localhost:4200');
 headers.append('Access-Control-Allow-Methods', 'GET, POST');
-headers.append('Access-Control-Allow-Headers', 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization');
+headers.append('Access-Control-Allow-Headers', 'DNT,User-Agent,Content-Type,Range');
 headers.append('Access-Control-Expose-Headers', 'Content-Length,Content-Range');
 
 // Not Found response
@@ -30,11 +32,11 @@ export class NotFound extends Response {
 // JSON response
 export class JSONResponse<T> extends Response {
   constructor(body: object, options: ResponseInit & { headers?: Headers } = {}) {
-		if (!options.headers) {
-			options.headers = new Headers();
-		}
+    if (!options.headers) {
+      options.headers = new Headers();
+    }
 
-		options.headers.append('Content-Type', 'application/json');
+    options.headers.append('Content-Type', 'application/json');
 
     super(JSON.stringify(body), options);
   }
@@ -51,7 +53,43 @@ export interface Env {
   // MY_BUCKET: R2Bucket;
 }
 
-api.get('/random', () => new JSONResponse({ random: Math.random() }, { headers }));
+api.get('/game/prepare', () => {
+  const guess = ['rock', 'paper', 'scissors'][Math.floor(Math.random() * 3)] as Guess;
+
+  const game: IGameState = { state: 'prepare', computerGuess: guess };
+
+  return new JSONResponse(game, { headers });
+});
+
+api.post('/game/settle', async (request: Request) => {
+  const { userGuess, computerGuess } = await request.json<Pick<IGameStateSettle, 'computerGuess' | 'userGuess'>>();
+
+  console.log('userGuess', userGuess);
+
+  const result = (() => {
+    if (userGuess === computerGuess) {
+      return 'draw';
+    }
+
+    if (userGuess === 'rock' && computerGuess === 'scissors') {
+      return 'win';
+    }
+
+    if (userGuess === 'paper' && computerGuess === 'rock') {
+      return 'win';
+    }
+
+    if (userGuess === 'scissors' && computerGuess === 'paper') {
+      return 'win';
+    }
+
+    return 'lose';
+  })();
+
+  const game: IGameState = { state: 'settle', computerGuess, userGuess, result };
+
+  return new JSONResponse(game, { headers });
+});
 
 // Bind API routes to main router, defaults to 404
 router.all('/api/*', api.handle).all('*', () => new NotFound());

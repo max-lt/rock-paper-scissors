@@ -1,0 +1,30 @@
+<h1>Rocks paper scissors</h1>
+
+<ng-container *ngIf="game">
+  <!-- Buttons for user guess -->
+  <ng-container *ngIf="game.state === 'prepare'">
+    <button (click)="play('rock')">Rock</button>
+    <button (click)="play('paper')">Paper</button>
+    <button (click)="play('scissors')">Scissors</button>
+  </ng-container>
+
+  <!-- Game result -->
+  <ng-container *ngIf="game.state === 'settle'">
+    <!-- User guess -->
+    <p>You chose {{ game.userGuess }}</p>
+
+    <!-- Computer guess -->
+    <p>Computer chose {{ game.computerGuess }}</p>
+
+    <!-- Result -->
+    <strong>
+      <ng-container [ngSwitch]="game.result">
+        <ng-template ngSwitchCase="win"> You win! </ng-template>
+        <ng-template ngSwitchCase="lose"> You lose! </ng-template>
+        <ng-template ngSwitchCase="draw"> Draw! </ng-template>
+      </ng-container>
+    </strong>
+  </ng-container>
+</ng-container>
+
+<button *ngIf="!game || game.state === 'settle'" (click)="prepareGame()">Play again</button>

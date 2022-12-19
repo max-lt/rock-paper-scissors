@@ -31,3 +31,9 @@ We add `webapp/proxy.conf.json` to link `/api/*` calls to our worker.
 
 Worker now has an `api` router that provides `/api/random` endpoint that returns a random number (to test that our proxy works).
 
+## Can play a game vs computer
+
+We now can play a game vs computer, but there is two problems at this stage :
+  - an advanced user can cheat by looking into the developers tools network tab (because computer sends his guess first)
+  - the average user cannot verify that the computer did not cheat
+
