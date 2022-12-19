@@ -40,4 +40,4 @@ export interface Player {
   games: number;
 } 
 
-export type LeaderBoard = Player[];
+export type LeaderBoard = Omit<Player, 'id'>[];
