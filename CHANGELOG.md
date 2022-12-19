@@ -37,3 +37,7 @@ We now can play a game vs computer, but there is two problems at this stage :
   - an advanced user can cheat by looking into the developers tools network tab (because computer sends his guess first)
   - the average user cannot verify that the computer did not cheat
 
+## Provably fair game
+
+We now have a provably fair game, but there is still a bit of work to do on UI so the user can understands what happens.
+

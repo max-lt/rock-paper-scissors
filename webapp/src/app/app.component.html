@@ -1,6 +1,11 @@
 <h1>Rocks paper scissors</h1>
 
 <ng-container *ngIf="game">
+  <pre>{{ game | json }}</pre>
+
+  <!-- Game fairness -->
+  <game-fairness [game]="game"></game-fairness>
+
   <!-- Buttons for user guess -->
   <ng-container *ngIf="game.state === 'prepare'">
     <button (click)="play('rock')">Rock</button>
@@ -24,6 +29,7 @@
         <ng-template ngSwitchCase="draw"> Draw! </ng-template>
       </ng-container>
     </strong>
+
   </ng-container>
 </ng-container>
 

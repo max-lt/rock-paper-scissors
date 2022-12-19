@@ -1,8 +1,7 @@
-import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
 
-import { Guess, IGameState, IGameStatePrepare, IGameStateSettle } from '~/interfaces';
+import { Guess, IGameState } from '~/interfaces';
+import { GameService } from './game.service';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +10,7 @@ import { Guess, IGameState, IGameStatePrepare, IGameStateSettle } from '~/interf
 export class AppComponent {
   public game: IGameState | null = null;
 
-  constructor(private http: HttpClient) {
+  constructor(private gameService: GameService) {
     this.prepareGame();
   }
 
@@ -19,7 +18,7 @@ export class AppComponent {
    * Prepare a game - this is called when the page loads and when the user clicks on the "Play Again" button
    */
   async prepareGame() {
-    this.game = await firstValueFrom(this.http.get<IGameStatePrepare>('/api/game/prepare'));
+    this.game = await this.gameService.prepareGame();
   }
 
   /**
@@ -33,10 +32,12 @@ export class AppComponent {
       return;
     }
 
-    const computerGuess = this.game.computerGuess;
+    const id = this.game.id;
 
-    this.game = await firstValueFrom(
-      this.http.post<IGameStateSettle>('/api/game/settle', { userGuess, computerGuess })
-    );
+    this.game = await this.gameService.settleGame(id, userGuess);
+  }
+
+  async verifyGame() {
+    
   }
 }

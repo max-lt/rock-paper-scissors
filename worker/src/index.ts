@@ -53,18 +53,38 @@ export interface Env {
   // MY_BUCKET: R2Bucket;
 }
 
-api.get('/game/prepare', () => {
+// Todo: persist games in KV
+const games = new Map<string, IGameState & { nonce: string; computerGuess: Guess }>();
+
+api.get('/game/prepare', async () => {
   const guess = ['rock', 'paper', 'scissors'][Math.floor(Math.random() * 3)] as Guess;
 
-  const game: IGameState = { state: 'prepare', computerGuess: guess };
+  const id = crypto.randomUUID();
+  const nonce = crypto.randomUUID().slice(0, 8);
+
+  // Perform hash of nonce + guess
+  const digest = await crypto.subtle.digest('SHA-1', new TextEncoder().encode(nonce + guess));
+
+  // Turn digest into a hex string
+  const hash = [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
+
+  const game: IGameState = { id, state: 'prepare', hash };
+
+  // Store game with nonce
+  games.set(id, { ...game, nonce, computerGuess: guess });
 
   return new JSONResponse(game, { headers });
 });
 
 api.post('/game/settle', async (request: Request) => {
-  const { userGuess, computerGuess } = await request.json<Pick<IGameStateSettle, 'computerGuess' | 'userGuess'>>();
+  const { id, userGuess } = await request.json<Pick<IGameStateSettle, 'id' | 'userGuess'>>();
 
-  console.log('userGuess', userGuess);
+  const game = games.get(id);
+  if (!game) {
+    return new NotFound();
+  }
+
+  const { computerGuess } = game;
 
   const result = (() => {
     if (userGuess === computerGuess) {
@@ -86,9 +106,13 @@ api.post('/game/settle', async (request: Request) => {
     return 'lose';
   })();
 
-  const game: IGameState = { state: 'settle', computerGuess, userGuess, result };
+  // Assign result to game
+  const settled: IGameState = { ...game, state: 'settle', userGuess, result };
 
-  return new JSONResponse(game, { headers });
+  // Update game
+  games.set(id, settled);
+
+  return new JSONResponse(settled, { headers });
 });
 
 // Bind API routes to main router, defaults to 404

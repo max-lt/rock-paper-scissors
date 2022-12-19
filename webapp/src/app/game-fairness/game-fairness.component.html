@@ -1,0 +1,6 @@
+<div *ngIf="game">
+  Computer result hash: {{ game.hash }}
+  <div *ngIf="game.state === 'settle'">
+    {{ game.hash }} = {{ game.computerGuess }} + {{ game.nonce }} ? {{ verified }}
+  </div>
+</div>

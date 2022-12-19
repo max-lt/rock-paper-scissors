@@ -2,16 +2,32 @@ export type Guess = 'rock' | 'paper' | 'scissors';
 export type State = 'prepare' | 'settle';
 export type Result = 'win' | 'lose' | 'draw';
 
-export interface IGameStatePrepare {
-  state: 'prepare';
-  computerGuess: Guess;
+interface ICommonGameProperties {
+  id: string;
+  state: State;
+  hash: string; // Computer hashed guess, sha256(nonce + guess)
 }
 
-export interface IGameStateSettle {
+export interface IGameStatePrepare extends ICommonGameProperties {
+  state: 'prepare';
+}
+
+export interface IGameStateSettle extends ICommonGameProperties {
   state: 'settle';
-  result: Result;
-  computerGuess: Guess;
   userGuess: Guess;
+
+  /**
+   * The computer's guess
+   */
+  computerGuess: Guess;
+
+  /**
+   * The nonce used to generate the hash
+   * to verify the computer's guess: sha256(nonce + guess) = hash
+   */
+  nonce: string;
+
+  result: Result;
 }
 
 export type IGameState = IGameStatePrepare | IGameStateSettle;
