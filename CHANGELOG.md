@@ -50,3 +50,7 @@ Added tailwind lib to webapp
 ## Add persistance with KV.
 
 ## Serve static content with worker
+
+## Use planetscale for persistance
+
+We noticed consistency issues with Cloudflare KVs so we now use planetscale database, we no longer need KV bindings

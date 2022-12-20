@@ -20,13 +20,16 @@ const api = Router({ base: '/api' }); // API router
 
 // CORS headers
 const headers = new Headers();
+headers.append('Access-Control-Allow-Origin', 'http://localhost:4200');
+headers.append('Access-Control-Allow-Methods', 'GET,HEAD,POST,OPTIONS');
+headers.append('Access-Control-Expose-Headers', 'Content-Length,Content-Range');
 
-const env = typeof ENVIRONMENT === 'string' ? ENVIRONMENT : 'development';
-if (env === 'development') {
-  headers.append('Access-Control-Allow-Origin', 'http://localhost:4200');
-  headers.append('Access-Control-Allow-Methods', 'GET, POST');
-  headers.append('Access-Control-Allow-Headers', 'DNT,User-Agent,Content-Type,Range');
-  headers.append('Access-Control-Expose-Headers', 'Content-Length,Content-Range');
+function opts(env: Env) {
+  if (env.ENVIRONMENT === 'development') {
+    return { headers };
+  }
+
+  return {};
 }
 
 // Not Found response
@@ -50,49 +53,45 @@ export class JSONResponse<T> extends Response {
 }
 
 export interface Env {
-  rock_paper_scissors: KVNamespace;
+  ENVIRONMENT: string;
   __STATIC_CONTENT: KVNamespace;
 }
 
 // Register player
 api.post('/player/register', async (request: Request, env: Env) => {
-  const kv = env.rock_paper_scissors;
   const { name } = await request.json<{ name: string }>();
-  const player = await playerService.registerPlayer(kv, name);
-  return new JSONResponse({ player }, { headers });
+  const player = await playerService.registerPlayer(name);
+  return new JSONResponse({ player }, opts(env));
 });
 
 // Get board only
 api.get('/game/board', async (request: Request, env: Env) => {
-  const kv = env.rock_paper_scissors;
-  const board = await boardService.getLeaderBoard(kv);
-  return new JSONResponse({ board }, { headers });
+  const board = await boardService.getLeaderBoard();
+  return new JSONResponse({ board }, opts(env));
 });
 
 // Get new game and board
 api.post('/game/prepare', async (request: Request, env: Env) => {
-  const kv = env.rock_paper_scissors;
   const { playerId } = await request.json<{ playerId: string }>();
 
-  const game = await gameService.prepareGame(kv, playerId);
-  const board = await boardService.getLeaderBoard(kv);
+  const game = await gameService.prepareGame(playerId);
+  const board = await boardService.getLeaderBoard();
 
-  return new JSONResponse({ game, board }, { headers });
+  return new JSONResponse({ game, board }, opts(env));
 });
 
 // Settle game and refreshed board
 api.post('/game/settle', async (request: Request, env: Env) => {
-  const kv = env.rock_paper_scissors;
   const { id, userGuess } = await request.json<{ id: string; userGuess: Guess }>();
 
-  const game = await gameService.settleGame(kv, id, userGuess);
+  const game = await gameService.settleGame(id, userGuess);
   if (!game) {
     return new NotFound();
   }
 
-  const board = await boardService.getLeaderBoard(kv);
+  const board = await boardService.getLeaderBoard();
 
-  return new JSONResponse({ game, board }, { headers });
+  return new JSONResponse({ game, board }, opts(env));
 });
 
 import { getAssetFromKV } from '@cloudflare/kv-asset-handler';

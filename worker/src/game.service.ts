@@ -1,13 +1,13 @@
-import { Guess, IGameState, IGameStatePrepare, IGameStateSettle, IPlayer } from '~/interfaces';
+import { Guess, IGameState, IGameStatePrepare, IGameStateSettle } from '~/interfaces';
 
-import { setItem, getItem, InternalGameState } from './storage.utils';
+import { storageService } from './storage.service';
 import { playerService } from './player.service';
 
 export const gameService = {
   /**
    * Creates a new game and returns the game state with the computer guess hashed
    */
-  async prepareGame(kv: KVNamespace, playerId: string): Promise<IGameStatePrepare> {
+  async prepareGame(playerId: string): Promise<IGameStatePrepare> {
     const guess = ['rock', 'paper', 'scissors'][Math.floor(Math.random() * 3)] as Guess;
 
     const id = crypto.randomUUID();
@@ -22,15 +22,15 @@ export const gameService = {
     const game: IGameState = { id, state: 'prepare', hash, player: playerId };
 
     // Store game with nonce
-    await setItem(kv, id, { ...game, nonce, computerGuess: guess });
+    await storageService.setGame({ ...game, nonce, computerGuess: guess });
 
     return game;
   },
   /**
    * Computer unveils its guess and the result of the game
    */
-  async settleGame(kv: KVNamespace, id: string, playerGuess: Guess): Promise<IGameStateSettle | null> {
-    const game = await getItem<InternalGameState>(kv, id);
+  async settleGame(id: string, playerGuess: Guess): Promise<IGameStateSettle | null> {
+    const game = await storageService.getGame(id);
     if (!game) {
       return null;
     }
@@ -65,10 +65,10 @@ export const gameService = {
     const settled: IGameState = { ...game, state: 'settle', userGuess: playerGuess, result };
 
     // Update game
-    await setItem(kv, id, settled);
+    await storageService.updateGame({ id: game.id, state: 'settle', userGuess: playerGuess, result });
 
     // Update player score
-    await playerService.updateScore(kv, game.player, result);
+    await playerService.updateScore(game.player, result);
 
     return settled;
   }
