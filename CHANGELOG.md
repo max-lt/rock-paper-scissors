@@ -50,3 +50,8 @@ Added tailwind lib to webapp
 ## Add persistance with KV.
 
 ## Serve static content with worker
+
+## Use firebase for persistance
+
+We noticed consistency issues with Cloudflare KVs so we now use firebase, we no longer need KV bindings
+

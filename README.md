@@ -22,21 +22,6 @@ npm i
 account_id = "..."
 ```
 
-### Create KV for production and dev
-
-```bash
-wrangler kv:namespace create "rock_paper_scissors"
-wrangler kv:namespace create --preview "rock_paper_scissors"
-```
-
-```toml
-#  worker/wrangler.toml 
-kv_namespaces = [
-  { binding = "rock_paper_scissors", id = "...", preview_id = "..." }
-]
-```
-
-
 ### Run project
 Worker
 ```bash

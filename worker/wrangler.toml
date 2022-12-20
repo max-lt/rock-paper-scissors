@@ -8,13 +8,6 @@ site = { bucket = "../webapp/dist/app" }
 
 [env.development]
 vars = { ENVIRONMENT = "development" }
-kv_namespaces = [
-  { binding = "rock_paper_scissors", id = "...", preview_id = "..." },
-]
-
 
 [env.production]
 vars = { ENVIRONMENT = "production" }
-kv_namespaces = [
-  { binding = "rock_paper_scissors", id = "..." },
-]

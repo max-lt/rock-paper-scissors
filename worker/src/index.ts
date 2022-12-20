@@ -50,47 +50,42 @@ export class JSONResponse<T> extends Response {
 }
 
 export interface Env {
-  rock_paper_scissors: KVNamespace;
   __STATIC_CONTENT: KVNamespace;
 }
 
 // Register player
-api.post('/player/register', async (request: Request, env: Env) => {
-  const kv = env.rock_paper_scissors;
+api.post('/player/register', async (request: Request) => {
   const { name } = await request.json<{ name: string }>();
-  const player = await playerService.registerPlayer(kv, name);
+  const player = await playerService.registerPlayer(name);
   return new JSONResponse({ player }, { headers });
 });
 
 // Get board only
-api.get('/game/board', async (request: Request, env: Env) => {
-  const kv = env.rock_paper_scissors;
-  const board = await boardService.getLeaderBoard(kv);
+api.get('/game/board', async () => {
+  const board = await boardService.getLeaderBoard();
   return new JSONResponse({ board }, { headers });
 });
 
 // Get new game and board
-api.post('/game/prepare', async (request: Request, env: Env) => {
-  const kv = env.rock_paper_scissors;
+api.post('/game/prepare', async (request: Request) => {
   const { playerId } = await request.json<{ playerId: string }>();
 
-  const game = await gameService.prepareGame(kv, playerId);
-  const board = await boardService.getLeaderBoard(kv);
+  const game = await gameService.prepareGame(playerId);
+  const board = await boardService.getLeaderBoard();
 
   return new JSONResponse({ game, board }, { headers });
 });
 
 // Settle game and refreshed board
-api.post('/game/settle', async (request: Request, env: Env) => {
-  const kv = env.rock_paper_scissors;
+api.post('/game/settle', async (request: Request) => {
   const { id, userGuess } = await request.json<{ id: string; userGuess: Guess }>();
 
-  const game = await gameService.settleGame(kv, id, userGuess);
+  const game = await gameService.settleGame(id, userGuess);
   if (!game) {
     return new NotFound();
   }
 
-  const board = await boardService.getLeaderBoard(kv);
+  const board = await boardService.getLeaderBoard();
 
   return new JSONResponse({ game, board }, { headers });
 });
@@ -114,7 +109,7 @@ router.all('/api/*', api.handle).all('*', async (request: Request, env: Env, ctx
       ASSET_NAMESPACE: env.__STATIC_CONTENT,
       ASSET_MANIFEST: assetManifest
     }
-  ).catch(() => new NotFound('NF'));
+  ).catch(() => new NotFound());
 });
 
 export default {
