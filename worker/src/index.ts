@@ -20,10 +20,14 @@ const api = Router({ base: '/api' }); // API router
 
 // CORS headers
 const headers = new Headers();
-headers.append('Access-Control-Allow-Origin', 'http://localhost:4200');
-headers.append('Access-Control-Allow-Methods', 'GET, POST');
-headers.append('Access-Control-Allow-Headers', 'DNT,User-Agent,Content-Type,Range');
-headers.append('Access-Control-Expose-Headers', 'Content-Length,Content-Range');
+
+const env = typeof ENVIRONMENT === 'string' ? ENVIRONMENT : 'development';
+if (env === 'development') {
+  headers.append('Access-Control-Allow-Origin', 'http://localhost:4200');
+  headers.append('Access-Control-Allow-Methods', 'GET, POST');
+  headers.append('Access-Control-Allow-Headers', 'DNT,User-Agent,Content-Type,Range');
+  headers.append('Access-Control-Expose-Headers', 'Content-Length,Content-Range');
+}
 
 // Not Found response
 export class NotFound extends Response {
@@ -45,7 +49,10 @@ export class JSONResponse<T> extends Response {
   }
 }
 
-export interface Env { rock_paper_scissors: KVNamespace; }
+export interface Env {
+  rock_paper_scissors: KVNamespace;
+  __STATIC_CONTENT: KVNamespace;
+}
 
 // Register player
 api.post('/player/register', async (request: Request, env: Env) => {
@@ -69,14 +76,14 @@ api.post('/game/prepare', async (request: Request, env: Env) => {
 
   const game = await gameService.prepareGame(kv, playerId);
   const board = await boardService.getLeaderBoard(kv);
-  
+
   return new JSONResponse({ game, board }, { headers });
 });
 
 // Settle game and refreshed board
 api.post('/game/settle', async (request: Request, env: Env) => {
   const kv = env.rock_paper_scissors;
-  const { id, userGuess } = await request.json<{ id: string, userGuess: Guess }>();
+  const { id, userGuess } = await request.json<{ id: string; userGuess: Guess }>();
 
   const game = await gameService.settleGame(kv, id, userGuess);
   if (!game) {
@@ -88,8 +95,27 @@ api.post('/game/settle', async (request: Request, env: Env) => {
   return new JSONResponse({ game, board }, { headers });
 });
 
+import { getAssetFromKV } from '@cloudflare/kv-asset-handler';
+import { serveSinglePageApp } from '@cloudflare/kv-asset-handler';
+
+import manifestJSON from '__STATIC_CONTENT_MANIFEST';
+const assetManifest = JSON.parse(manifestJSON);
+
 // Bind API routes to main router, defaults to 404
-router.all('/api/*', api.handle).all('*', () => new NotFound());
+router.all('/api/*', api.handle).all('*', async (request: Request, env: Env, ctx: ExecutionContext) => {
+  return getAssetFromKV(
+    {
+      request: serveSinglePageApp(request),
+      waitUntil(promise) {
+        return ctx.waitUntil(promise);
+      }
+    },
+    {
+      ASSET_NAMESPACE: env.__STATIC_CONTENT,
+      ASSET_MANIFEST: assetManifest
+    }
+  ).catch(() => new NotFound('NF'));
+});
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {

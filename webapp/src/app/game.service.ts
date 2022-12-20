@@ -2,12 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
-import { IGameStatePrepare, IGameStateSettle, LeaderBoard } from '~/interfaces';
+import { IGameStatePrepare, IGameStateSettle, ILeaderBoard } from '~/interfaces';
 import { PlayerService } from './player.service';
 
 interface IResponse<T = IGameStatePrepare | IGameStateSettle> {
   game: T;
-  board: LeaderBoard;
+  board: ILeaderBoard;
 }
 
 @Injectable({

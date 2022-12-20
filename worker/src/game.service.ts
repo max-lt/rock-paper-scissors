@@ -1,4 +1,4 @@
-import { Guess, IGameState, IGameStatePrepare, IGameStateSettle, Player } from '~/interfaces';
+import { Guess, IGameState, IGameStatePrepare, IGameStateSettle, IPlayer } from '~/interfaces';
 
 import { setItem, getItem, InternalGameState } from './storage.utils';
 import { playerService } from './player.service';
@@ -67,16 +67,8 @@ export const gameService = {
     // Update game
     await setItem(kv, id, settled);
 
-    // Update player
-    const player = await playerService.getPlayer(kv, game.player);
-    if (!player) {
-      throw new Error('Player not found');
-    }
-    await playerService.updatePlayer(kv, {
-      ...player,
-      games: player.games + 1,
-      wins: player.wins + (result === 'win' ? 1 : 0)
-    });
+    // Update player score
+    await playerService.updateScore(kv, game.player, result);
 
     return settled;
   }

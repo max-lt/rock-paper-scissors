@@ -48,3 +48,5 @@ Added tailwind lib to webapp
 ## Add leaderboard
 
 ## Add persistance with KV.
+
+## Serve static content with worker

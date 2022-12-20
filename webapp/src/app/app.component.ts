@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { Guess, IGameState, LeaderBoard, Player } from '~/interfaces';
+import { Guess, IGameState, ILeaderBoard, IPlayer } from '~/interfaces';
 import { GameService } from './game.service';
 import { PlayerService } from './player.service';
 
@@ -9,11 +9,11 @@ import { PlayerService } from './player.service';
   templateUrl: './app.component.html'
 })
 export class AppComponent {
-  public player: Player | null;
+  public player: IPlayer | null;
   public playerName = '';
 
   public game: IGameState | null = null;
-  public board?: LeaderBoard;
+  public board?: ILeaderBoard;
 
   constructor(private gameService: GameService, private playerService: PlayerService) {
     this.player = playerService.getPlayer();

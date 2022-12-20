@@ -33,11 +33,12 @@ export interface IGameStateSettle extends ICommonGameProperties {
 
 export type IGameState = IGameStatePrepare | IGameStateSettle;
 
-export interface Player {
+export interface IPlayer {
   id: string;
   name: string;
   wins: number;
+  draws: number;
   games: number;
-} 
+}
 
-export type LeaderBoard = Omit<Player, 'id'>[];
+export type ILeaderBoard = Omit<IPlayer, 'id'>[];

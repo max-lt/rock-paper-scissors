@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { Player } from '~/interfaces';
+import { IPlayer } from '~/interfaces';
 
 function tryParse<T>(value: string): T | null {
   try {
@@ -15,7 +15,7 @@ function tryParse<T>(value: string): T | null {
   providedIn: 'root'
 })
 export class PlayerService {
-  private player: Player | null;
+  private player: IPlayer | null;
 
   constructor(private http: HttpClient) {
     const player = localStorage.getItem('player') ?? null;
@@ -27,7 +27,7 @@ export class PlayerService {
   }
 
   public async registerPlayer(name: string) {
-    const { player } = await firstValueFrom(this.http.post<{ player: Player }>('/api/player/register', { name }));
+    const { player } = await firstValueFrom(this.http.post<{ player: IPlayer }>('/api/player/register', { name }));
 
     this.player = player;
 

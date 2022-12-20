@@ -69,14 +69,14 @@
         <thead>
           <tr>
             <th class="text-left p-4">Player</th>
-            <th class="text-right p-4">Wins / Games</th>
+            <th class="text-right p-4">Wins / Draws / Games</th>
           </tr>
         </thead>
 
         <tbody>
           <tr *ngFor="let player of board">
             <td>{{ player.name }}</td>
-            <td class="text-right">{{ player.wins }} / {{ player.games }}</td>
+            <td class="text-right">{{ player.wins }} / {{ player.draws }} / {{ player.games }}</td>
           </tr>
         </tbody>
       </table>
