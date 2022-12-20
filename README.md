@@ -1,5 +1,7 @@
 # Code assignment: Rock Paper Scissors
 
+Application deployed here [rock-paper-scissors-worker-production.devcat.workers.dev](https://rock-paper-scissors-worker-production.devcat.workers.dev/) 
+
 ## Development setup
 
 ### Install dependencies
@@ -44,4 +46,13 @@ npm start
 Webapp
 ```bash
 npm start
+```
+
+## Deploy in production
+```
+cd webapp
+npm run build
+
+cd worker
+npm run deploy
 ```
