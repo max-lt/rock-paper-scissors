@@ -1,6 +1,6 @@
 {
-  "cSpell.words": [
-    "leaderboard",
-    "planetscale"
-  ]
+  "cSpell.words": ["leaderboard", "planetscale"],
+  "files.associations": {
+    "*.css": "tailwindcss"
+  }
 }

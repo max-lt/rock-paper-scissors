@@ -1,0 +1,64 @@
+@import 'tailwindcss';
+
+@layer base {
+  h1 {
+    @apply text-5xl;
+  }
+
+  p {
+    @apply mt-2 text-xl;
+  }
+
+  code {
+    @apply rounded bg-pink-100 px-2 pt-2 pb-1 text-gray-700;
+  }
+
+  input {
+    @apply w-full appearance-none rounded border px-3 py-2 text-xl leading-tight text-gray-700 shadow;
+  }
+
+  input:focus {
+    @apply outline-none;
+  }
+
+  table {
+    @apply w-full;
+  }
+
+  thead {
+    @apply bg-gray-800 text-white;
+  }
+
+  tbody td {
+    @apply px-4 py-2;
+  }
+
+  tbody tr:nth-child(even) {
+    @apply bg-gray-100;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply cursor-pointer rounded px-4 py-2 font-bold;
+  }
+
+  .btn-gray {
+    @apply text-white;
+    background-color: rgb(31, 41, 55);
+  }
+
+  .btn-gray:hover {
+    background-color: rgb(55, 65, 81);
+  }
+
+  .btn-xl {
+    @apply rounded-lg px-6 py-3 text-2xl;
+  }
+
+  .note {
+    @apply ml-4;
+    display: list-item;
+    list-style-type: '> ';
+  }
+}

@@ -1,5 +1,6 @@
-## Initial commit: 
- - copy instructions `curl https://raw.githubusercontent.com/sweepbright/assignment-rock-paper-scissors/main/README.md > INSTRUCTIONS.md`
+## Initial commit:
+
+- copy instructions `curl https://raw.githubusercontent.com/sweepbright/assignment-rock-paper-scissors/main/README.md > INSTRUCTIONS.md`
 
 ## Generate web application:
 
@@ -11,7 +12,7 @@ ng new app --minimal --skip-tests --strict --style=scss --directory webapp
 
 ## Generate serverless handler
 
-As the backend part seems simple enough (3 endpoints at most *), and as we don't want to pay for any of this,
+As the backend part seems simple enough (3 endpoints at most \*), and as we don't want to pay for any of this,
 we will use Cloudflare Workers to serve our API for free (if this game gains in popularity, CF Workers allows us to scale painlessly).
 
 > \* as I imagine the application from now, there will be 2 endpoints for the game itself (prepareGame & settleGame) as we want our game to be provably fair and one endpoints to publish the leaderboard. Maybe some more for user identification (optionally, as this is not this project goal)
@@ -34,8 +35,9 @@ Worker now has an `api` router that provides `/api/random` endpoint that returns
 ## Can play a game vs computer
 
 We now can play a game vs computer, but there is two problems at this stage :
-  - an advanced user can cheat by looking into the developers tools network tab (because computer sends his guess first)
-  - the average user cannot verify that the computer did not cheat
+
+- an advanced user can cheat by looking into the developers tools network tab (because computer sends his guess first)
+- the average user cannot verify that the computer did not cheat
 
 ## Provably fair game
 
@@ -47,10 +49,10 @@ Added tailwind lib to webapp
 
 ## Add leaderboard
 
-## Add persistance with KV.
+## Add persistence with KV.
 
 ## Serve static content with worker
 
-## Use planetscale for persistance
+## Use planetscale for persistence
 
 We noticed consistency issues with Cloudflare KVs so we now use planetscale database, we no longer need KV bindings

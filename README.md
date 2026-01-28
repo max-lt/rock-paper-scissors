@@ -1,43 +1,46 @@
-# Code assignment: Rock Paper Scissors
+# Rock Paper Scissors
 
-Application deployed here [rock-paper-scissors-worker-production.devcat.workers.dev](https://rock-paper-scissors-worker-production.devcat.workers.dev/) 
+Proof of concept of a provably fair rock paper scissors game.
 
-## Development setup
+The computer provides his guess first, but the user discovers the computer guess only after his own guess has been submitted. To verify fairness: compute `sha1(nonce + computerGuess)` and compare it to the hash provided before your guess.
+
+**Live demo:** [rock-paper-scissors.workers.rocks](https://rock-paper-scissors.workers.rocks/)
+
+## Tech Stack
+
+- **Framework:** SvelteKit 2
+- **Styling:** Tailwind CSS
+- **Runtime:** OpenWorkers
+- **Database:** PostgreSQL
+
+## Development
 
 ### Install dependencies
-Worker
+
 ```bash
-cd worker 
-npm i
+bun install
 ```
 
-Webapp
+### Database setup
+
 ```bash
-cd webapp 
-npm i
+psql -f database-init.sql
 ```
 
-### Set your Cloudflare account ID in /worker/wrangler.toml (uncommitted)
-```toml
-account_id = "..."
-```
+### Run dev server
 
-### Run project
-Worker
 ```bash
-npm start
+bun run dev
 ```
 
-Webapp
+## Building
+
 ```bash
-npm start
+bun run build
 ```
 
-## Deploy in production
-```
-cd webapp
-npm run build
+## Type checking
 
-cd worker
-npm run deploy
+```bash
+bun run check
 ```
