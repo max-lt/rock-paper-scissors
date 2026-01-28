@@ -35,11 +35,7 @@
   async function prepareGame() {
     if (!player) return;
 
-    const res = await fetch('/api/game/prepare', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ playerId: player.id })
-    });
+    const res = await fetch('/api/game/prepare', { method: 'POST' });
     const data: { game: IGameState; board: ILeaderBoard } = await res.json();
     game = data.game;
     board = data.board;

@@ -1,4 +1,23 @@
-import type { Guess, IGameState, IPlayer, ILeaderBoard, Result } from './types';
+import type {
+  Guess,
+  IGameState,
+  IGameStatePrepare,
+  ILeaderBoard,
+  IPlayer,
+  Result
+} from './types';
+
+export async function getPlayerById(
+  db: BindingDatabase,
+  id: string
+): Promise<IPlayer | null> {
+  const rows = await db.query<IPlayer>(
+    `SELECT id, name, wins, draws, games FROM players WHERE id = $1::uuid`,
+    [id]
+  );
+
+  return rows[0] || null;
+}
 
 export async function getGame(
   db: BindingDatabase,
@@ -27,25 +46,20 @@ export async function getActiveGame(
 export async function createGame(
   db: BindingDatabase,
   game: {
-    id: string;
-    state: string;
     hash: string;
     player: string;
     nonce: string;
     computerGuess: Guess;
   }
-): Promise<void> {
-  await db.query(
-    `INSERT INTO games (id, state, hash, player, nonce, computer_guess) VALUES ($1::uuid, $2, $3, $4::uuid, $5, $6)`,
-    [
-      game.id,
-      game.state,
-      game.hash,
-      game.player,
-      game.nonce,
-      game.computerGuess
-    ]
+): Promise<IGameStatePrepare | null> {
+  const games = await db.query<IGameStatePrepare>(
+    `INSERT INTO games (hash, player, nonce, computer_guess) 
+      VALUES ($1, $2::uuid, $3, $4)
+      RETURNING id, state, hash, player, nonce`,
+    [game.hash, game.player, game.nonce, game.computerGuess]
   );
+
+  return games?.[0] || null;
 }
 
 export async function settleGame(

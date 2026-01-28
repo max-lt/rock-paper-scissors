@@ -1,5 +1,4 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
-/// <reference types="@openworkers/workers-types" />
 
 declare global {
   namespace App {
@@ -9,7 +8,6 @@ declare global {
     // interface PageState {}
     interface Platform {
       env: {
-        COOKIE_SECRET?: string;
         DATABASE: BindingDatabase;
         ASSETS?: BindingAssets;
       };

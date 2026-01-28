@@ -1,16 +1,17 @@
 import type { PageServerLoad } from './$types';
 import { getLeaderboard, getActiveGame } from '$lib/db';
 import { getPlayer } from '$lib/cookies';
-import type { ILeaderBoard, IGameState } from '$lib/types';
+import type { ILeaderBoard, IGameState, IPlayer } from '$lib/types';
 
 export const load: PageServerLoad = async ({ cookies, platform }) => {
   const db = platform?.env.DATABASE;
 
-  const player = getPlayer(cookies);
+  let player: IPlayer | null = null;
   let board: ILeaderBoard = [];
   let game: IGameState | null = null;
 
   if (db) {
+    player = await getPlayer(cookies, db);
     board = await getLeaderboard(db);
 
     if (player) {
