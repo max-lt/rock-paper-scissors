@@ -13,13 +13,6 @@ Originally a [technical assignment](./INSTRUCTIONS.md), now serving as a demo fo
 - **Secure authentication**: Cookie-based player sessions with database verification
 - **Per-endpoint workers**: Each API route compiled into its own optimized worker
 
-## Tech Stack
-
-- **Framework:** SvelteKit 2
-- **Styling:** Tailwind CSS
-- **Runtime:** OpenWorkers
-- **Database:** PostgreSQL
-
 ## Development
 
 ### Install dependencies
@@ -30,9 +23,7 @@ bun install
 
 ### Database setup
 
-```bash
-psql -f database-init.sql
-```
+Execute `schema.sql` in the OpenWorkers dashboard SQL console to create the required tables.
 
 ### Run dev server
 
