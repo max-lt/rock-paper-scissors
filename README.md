@@ -1,10 +1,17 @@
 # Rock Paper Scissors
 
-Proof of concept of a provably fair rock paper scissors game.
+Provably fair rock paper scissors game with leaderboard and player authentication.
 
-The computer provides his guess first, but the user discovers the computer guess only after his own guess has been submitted. To verify fairness: compute `sha1(nonce + computerGuess)` and compare it to the hash provided before your guess.
+Originally a [technical assignment](./INSTRUCTIONS.md), now serving as a demo for [@openworkers/adapter-sveltekit](https://github.com/openworkers/adapter-sveltekit) with per-endpoint workers.
 
 **Live demo:** [rock-paper-scissors.workers.rocks](https://rock-paper-scissors.workers.rocks/)
+
+## Features
+
+- **Provably fair**: Computer commits to its move before you play (SHA-1 hash verification)
+- **Leaderboard**: Track wins across all players
+- **Secure authentication**: Cookie-based player sessions with database verification
+- **Per-endpoint workers**: Each API route compiled into its own optimized worker
 
 ## Tech Stack
 
