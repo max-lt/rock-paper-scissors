@@ -11,13 +11,13 @@ export const POST: RequestHandler = async ({ request, platform, cookies }) => {
   }
 
   const { name } = await request.json();
-  const id = crypto.randomUUID();
+  const player = await createPlayer(db, name);
 
-  await createPlayer(db, { id, name });
+  if (!player) {
+    return json({ error: 'Failed to create player' }, { status: 500 });
+  }
 
-  const player = { id, name, wins: 0, draws: 0, games: 0 };
-
-  setPlayer(cookies, player);
+  setPlayer(cookies, player.id);
 
   return json({ player });
 };

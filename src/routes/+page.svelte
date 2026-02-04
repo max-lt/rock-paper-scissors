@@ -16,6 +16,8 @@
   let board: ILeaderBoard = $state(data.board);
 
   onMount(() => {
+    console.log('Mounted page with player:', player);
+
     if (player && !game) {
       prepareGame();
     }
@@ -25,7 +27,8 @@
     const res = await fetch('/api/player/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: playerName })
+      body: JSON.stringify({ name: playerName }),
+      credentials: 'include'
     });
     const data: { player: IPlayer } = await res.json();
     player = data.player;
@@ -35,7 +38,10 @@
   async function prepareGame() {
     if (!player) return;
 
-    const res = await fetch('/api/game/prepare', { method: 'POST' });
+    const res = await fetch('/api/game/prepare', {
+      method: 'POST',
+      credentials: 'include'
+    });
     const data: { game: IGameState; board: ILeaderBoard } = await res.json();
     game = data.game;
     board = data.board;
@@ -47,7 +53,8 @@
     const res = await fetch('/api/game/settle', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: game.id, userGuess })
+      body: JSON.stringify({ id: game.id, userGuess }),
+      credentials: 'include'
     });
     const data: { game: IGameState; board: ILeaderBoard } = await res.json();
     game = data.game;

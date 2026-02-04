@@ -76,12 +76,14 @@ export async function settleGame(
 
 export async function createPlayer(
   db: BindingDatabase,
-  player: { id: string; name: string }
-): Promise<void> {
-  await db.query(
-    `INSERT INTO players (id, name, wins, draws, games) VALUES ($1::uuid, $2, 0, 0, 0)`,
-    [player.id, player.name]
+  name: string
+): Promise<IPlayer | null> {
+  const rows = await db.query<IPlayer>(
+    `INSERT INTO players (name) VALUES ($1) RETURNING id, name, wins, draws, games`,
+    [name]
   );
+
+  return rows[0] || null;
 }
 
 export async function updatePlayerScore(

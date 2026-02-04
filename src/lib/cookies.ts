@@ -4,27 +4,24 @@ import { getPlayerById } from './db';
 
 const PLAYER_COOKIE = 'player';
 
-function getPlayerFromCookie(cookies: Cookies): IPlayer | null {
-  const raw = cookies.get(PLAYER_COOKIE);
-
-  if (!raw) return null;
-
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
-}
+const UUID_REGEX =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export async function getPlayer(
   cookies: Cookies,
   db: BindingDatabase
 ): Promise<IPlayer | null> {
-  const cookiePlayer = getPlayerFromCookie(cookies);
+  const playerId = cookies.get(PLAYER_COOKIE);
 
-  if (!cookiePlayer) return null;
+  if (!playerId) return null;
 
-  const player = await getPlayerById(db, cookiePlayer.id);
+  // Validate UUID format
+  if (!UUID_REGEX.test(playerId)) {
+    clearPlayer(cookies);
+    return null;
+  }
+
+  const player = await getPlayerById(db, playerId);
 
   if (!player) {
     clearPlayer(cookies);
@@ -34,10 +31,11 @@ export async function getPlayer(
   return player;
 }
 
-export function setPlayer(cookies: Cookies, player: IPlayer): void {
-  cookies.set(PLAYER_COOKIE, JSON.stringify(player), {
+export function setPlayer(cookies: Cookies, playerId: string): void {
+  // Use SvelteKit defaults: sameSite: 'lax', secure: auto
+  cookies.set(PLAYER_COOKIE, playerId, {
     path: '/',
-    httpOnly: false,
+    httpOnly: true,
     maxAge: 60 * 60 * 24 * 365 // 1 year
   });
 }
