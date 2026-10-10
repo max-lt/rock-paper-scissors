@@ -55,7 +55,7 @@ export async function createGame(
   const games = await db.query<IGameStatePrepare>(
     `INSERT INTO games (hash, player, nonce, computer_guess) 
       VALUES ($1, $2::uuid, $3, $4)
-      RETURNING id, state, hash, player, nonce`,
+      RETURNING id, state, hash, player`,
     [game.hash, game.player, game.nonce, game.computerGuess]
   );
 

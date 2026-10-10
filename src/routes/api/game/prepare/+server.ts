@@ -1,11 +1,8 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createGame, getLeaderboard } from '$lib/db';
+import { getLeaderboard } from '$lib/db';
 import { getPlayer } from '$lib/cookies';
-import { sha1 } from '$lib/game';
-import type { Guess } from '$lib/types';
-
-const GUESSES: Guess[] = ['rock', 'paper', 'scissors'];
+import { openGame } from '$lib/server/game';
 
 export const POST: RequestHandler = async ({ cookies, platform }) => {
   const db = platform?.env.DATABASE;
@@ -20,16 +17,7 @@ export const POST: RequestHandler = async ({ cookies, platform }) => {
     return json({ error: 'Not authenticated' }, { status: 401 });
   }
 
-  const nonce = crypto.randomUUID().slice(0, 8);
-  const computerGuess = GUESSES[Math.floor(Math.random() * 3)];
-  const hash = await sha1(nonce + computerGuess);
-
-  const game = await createGame(db, {
-    hash,
-    player: player.id,
-    nonce,
-    computerGuess
-  });
+  const game = await openGame(db, player.id);
 
   if (!game) {
     return json({ error: 'Failed to create game' }, { status: 500 });

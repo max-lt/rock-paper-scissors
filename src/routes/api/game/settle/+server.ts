@@ -7,18 +7,25 @@ import {
   getLeaderboard
 } from '$lib/db';
 import { getWinner } from '$lib/game';
+import { getPlayer } from '$lib/cookies';
 
-export const POST: RequestHandler = async ({ request, platform }) => {
+export const POST: RequestHandler = async ({ request, cookies, platform }) => {
   const db = platform?.env.DATABASE;
 
   if (!db) {
     return json({ error: 'Database not available' }, { status: 500 });
   }
 
+  const player = await getPlayer(cookies, db);
+
+  if (!player) {
+    return json({ error: 'Not authenticated' }, { status: 401 });
+  }
+
   const { id, userGuess } = await request.json();
   const game = await getGame(db, id);
 
-  if (!game || game.state !== 'prepare') {
+  if (!game || game.state !== 'prepare' || game.player !== player.id) {
     return json({ error: 'Game not found' }, { status: 404 });
   }
 

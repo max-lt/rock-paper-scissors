@@ -1,5 +1,6 @@
 import type { PageServerLoad } from './$types';
-import { getLeaderboard, getActiveGame } from '$lib/db';
+import { getLeaderboard } from '$lib/db';
+import { openGame } from '$lib/server/game';
 import { getPlayer } from '$lib/cookies';
 import type { ILeaderBoard, IGameState, IPlayer } from '$lib/types';
 
@@ -14,12 +15,10 @@ export const load: PageServerLoad = async ({ cookies, platform }) => {
     player = await getPlayer(cookies, db);
     board = await getLeaderboard(db);
 
+    // The page renders with the hash of the game, so the client does not
+    // prepare one after it loads
     if (player) {
-      const activeGame = await getActiveGame(db, player.id);
-
-      if (activeGame) {
-        game = activeGame;
-      }
+      game = await openGame(db, player.id);
     }
   }
 

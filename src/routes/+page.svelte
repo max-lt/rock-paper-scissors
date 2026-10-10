@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import type { Guess, IGameState, ILeaderBoard, IPlayer } from '$lib/types';
   import { guessName } from '$lib/game';
   import GameFairness from '$lib/components/GameFairness.svelte';
@@ -14,14 +13,6 @@
   let game: IGameState | null = $state(data.game);
   // svelte-ignore state_referenced_locally
   let board: ILeaderBoard = $state(data.board);
-
-  onMount(() => {
-    console.log('Mounted page with player:', player);
-
-    if (player && !game) {
-      prepareGame();
-    }
-  });
 
   async function registerPlayer() {
     const res = await fetch('/api/player/register', {
