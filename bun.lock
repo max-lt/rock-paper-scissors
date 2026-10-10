@@ -5,7 +5,7 @@
     "": {
       "name": "rps-svelte",
       "devDependencies": {
-        "@openworkers/adapter-sveltekit": "^0.4.2",
+        "@openworkers/adapter-sveltekit": "^0.5.6",
         "@openworkers/workers-types": "^0.1.9",
         "@sveltejs/kit": "^2.50.1",
         "@sveltejs/vite-plugin-svelte": "^6.2.4",
@@ -85,7 +85,7 @@
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.31", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw=="],
 
-    "@openworkers/adapter-sveltekit": ["@openworkers/adapter-sveltekit@0.4.2", "", { "dependencies": { "esbuild": "^0.27.2" }, "peerDependencies": { "@sveltejs/kit": "^2.0.0" } }, "sha512-2rZ1BGJftU2ow9E7ugdBKha3U2JCw/xUmsAyhJ2w2NQXT/XyheHMN2UxBbUE3FiwDcwZZQg8MgBajdTpbBcRHA=="],
+    "@openworkers/adapter-sveltekit": ["@openworkers/adapter-sveltekit@0.5.6", "", { "dependencies": { "esbuild": "^0.27.2" }, "peerDependencies": { "@sveltejs/kit": "^2.0.0" } }, "sha512-9uHmzPBTO+2wMav/mwq6H9c2AaXecDmXokBj4FhhlGQJFruL8IkNQWQpSd8118F3Az9Pat/cffjGGFn50YjhmA=="],
 
     "@openworkers/workers-types": ["@openworkers/workers-types@0.1.9", "", { "peerDependencies": { "typescript": "^5.9.3" } }, "sha512-aaRfaOc/C/jl12w+QewCFed2eRLXdj1VaOmQOpjrUtA7kI5SDrMtx0FJf4QuVjyIH1fkn2YTt0xbEJZ81voYSw=="],
 
